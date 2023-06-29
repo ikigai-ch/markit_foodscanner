@@ -1,0 +1,560 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- https://www.sitepoint.com/a-basic-html5-template/ -->
+  <title>MarkIt - Dashboard</title>
+  <meta name="description" content="Manage your personal MarkIt Pantry.">
+  <meta property="og:title" content="MarkIt - Dashboard">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  
+
+
+  <!--JS needed to make bootstrap work-->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+
+  <!--Bootstrap CSS-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+  <!--Quagga.js Library-->
+  <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+  </style>
+
+  <link rel="stylesheet" href="stylesheets/dashboard.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-custom navbar-expand-lg navbar-light">
+    <div class="container-fluid collapse navbar-collapse" id="navbarSupportedContent">
+      <a class="navbar-brand col" href="/dashboard"> <img src="/assets/Group 22.svg" alt="Logo" width="100vw"></a>
+
+      <!--Language Selector-->
+      <!-- https://getbootstrap.com/docs/4.0/components/navbar/ -->
+      <div class="navbar-nav ml-auto">
+        <form class="form-inline form-inline my-2 my-lg-0" action="">
+          <select class="form-control form-select lang-sign-up-nav" aria-label="Default select example">
+            <option selected>EN</option>
+            <option value="1">EN</option>
+            <option value="2">DE</option>
+            <option value="3">PL</option>
+            <option value="3">FR</option>
+          </select>
+        </form>
+      </div>
+
+      <!--Avatar Image-->
+     
+      <div class="order-2">
+        <div class="dropdown ">
+          <!--Foto von <a href="https://unsplash.com/@juricakoletic?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Jurica Koletić</a> auf <a href="https://unsplash.com/de/fotos/7YVZYZeITc8?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>-->
+          <button type="button" class="avatar avatar-mask" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            <!--https://www.w3schools.com/cssref/tryit.php?filename=trycss3_mask-image0-->
+            <!--https://www.w3schools.com/java/ref_string_charat.asp-->
+            <!-- First letter of Username as Avatar-->
+            <%= user.username.charAt(0) %>
+      
+          </button>
+      
+          <div class=" dropdown-menu dropleft" aria-labelledby="dropdownMenuButton">
+            <form action="/logout" method="post">
+              <button class="btn btn-link">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <!--Barcode Search Bar-->
+  <div class="container">
+    <!-- https://getbootstrap.com/docs/5.0/layout/grid/ -->
+    <div class="add-action-section col  col-lg-6  justify-content-between">
+      <div class="custom-search col-8">
+        <input type="text" class="custom-search-input" id="barcode-input" placeholder="Barcode">
+        <button class="no-style-button" id="custom-search-botton" type="submit" data-toggle="modal" data-target="#scanner"
+          onclick="readBarcode()">
+          <img src="/assets/scan.svg" alt="Scan product button" width="25vw">
+        </button>
+      </div>
+
+      <div id="action-button-group col-4">
+        <!-- <button class="add-action-button" type="submit" data-toggle="modal" data-target="#manualAdd">
+          <img src="/assets/pencil.svg" alt="" width="25vw">
+        </button> -->
+        <button class="add-action-button" type="submit" data-toggle="modal" data-target="#manualAdd"
+          onclick="addBarcodeInput()">
+          <img src="/assets/searchnormal1.svg" alt="Search product manually by entering barcode" width="25vw">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Modal -->
+  <!-- https://getbootstrap.com/docs/4.0/components/modal/ -->
+  <!-- Add item modal -->
+  <div class="modal fade" id="manualAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="manualAddTitle">Add a product</h2>
+          <button type="button" class="close no-style-button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><img src="/assets/close.svg" alt="Close button" width="20px"></span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Add a product manually -->
+          <div class="container sign-up modal-form">
+            <div class="justify-content-center">
+              <form class="mx-auto add-product" action="/add_product" method="post">
+                <div class="form-group">
+                  <label for="username-field"></label>
+                  <!--https://stackoverflow.com/questions/24391078/how-to-change-the-default-message-of-the-required-field-in-the-popover-of-form-c-->
+                  <input type="text" class="login-form" id="barcode" name="barcode" placeholder="Barcode" required
+                    oninvalid="this.setCustomValidity('Barcode cannot be empty')" oninput="setCustomValidity('')" />
+                  <label for="quantity-field"></label>
+                  <input type="text" class="login-form" id="quantity" name="quantity" placeholder="Quantity" />
+                  <label for="date-field"></label>
+                  <input type="date" class="login-form" id="date" name="expiration_date"
+                    placeholder="Expiration date" />
+                </div>
+                <button id="add-button" type="submit" class="button-primary">Add item</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Barcode modal to scan bar code-->
+  <div class="modal fade" id="scanner" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="manualAddTitle">
+            Scan the product barcode
+            <p style="font-weight: 400">This scanner only takes EAN 13 barcodes</p>
+          </h2>
+          </button>
+          </h2>
+          <button type="button" class="close no-style-button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><img src="/assets/close.svg" alt="Close button" width="20px"></span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Add a product manually -->
+          <div id="live-camera">
+            <video class="col-12" id="webcam" autoplay></video>
+          </div>
+          <div class="container sign-up modal-form">
+            <div class="justify-content-center">
+              <form class="mx-auto add-product" action="/add_product" method="post">
+                <div class="form-group">
+                  <label for="username-field"></label>
+                  <!--https://stackoverflow.com/questions/24391078/how-to-change-the-default-message-of-the-required-field-in-the-popover-of-form-c-->
+                  <input type="text" class="login-form" id="barcode-input-modal" name="barcode" placeholder="Barcode"
+                    required oninvalid="this.setCustomValidity('Barcode cannot be empty')"
+                    oninput="setCustomValidity('')" />
+                  <label for="quantity-field"></label>
+                  <input type="text" class="login-form" id="quantity" name="quantity" placeholder="Quantity" />
+                  <label for="date-field"></label>
+                  <input type="date" class="login-form" id="date" name="expiration_date"
+                    placeholder="Expiration date" />
+                </div>
+                <button id="add-button" type="submit" class="button-primary">Add item</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Heading -->
+  <div class="container">
+    <div class="col-lg-6 col">
+      <hr class="title-separator col-6 col-md-4">
+
+      <h1>Your Pantry</h1>
+      <!--Average Score Calculation-->
+      <% let totalScore=0 %>
+      <!-- Count number of times where no eco score was found-->
+      <% let noScoreCount=0 %> 
+    
+        <!--iterate thorugh the product list-->
+        <% data.forEach(function(i) { %>
+
+          <% if (i.eco_score=="unknown" ) { %>
+            <!--Increase noScorecount if a value is unkown-->
+            <% noScoreCount = noScoreCount + 1 %>
+          <% } else if (i.eco_score=="a" ) { %>
+            <!--Map scores to a numeric value-->
+            <% totalScore=totalScore + 1 %>
+          <% } else if (i.eco_score=="b" ) { %>
+            <% totalScore=totalScore + 2 %>
+          <% } else if (i.eco_score=="c" ) { %>
+              <% totalScore=totalScore + 3 %>
+           <% } else if (i.eco_score=="d" ) { %>
+               <% totalScore=totalScore + 4 %>
+            <% } else if (i.eco_score=="e" ) { %>
+              <% totalScore=totalScore + 5 %>
+             <% } %>
+           <% }); %>
+
+    <!--Calculate the average score-->
+    <!--Subtract noScore from length-->
+    <% let averageScore = totalScore / (data.length-noScoreCount) %>
+
+      <!--Map the numeric value back to the ecoscore-->
+      <% if (averageScore < 1.5 ) { %>
+        <% averageScore="A" %>
+       <% } else if (averageScore >= 1.5 && averageScore < 2.5) { %>
+          <% averageScore="B" %>
+        <% } else if (averageScore >= 2.5 && averageScore < 3.5) { %>
+           <% averageScore="C" %>
+        <% } else if (averageScore >= 3.5 && averageScore < 4.5) { %>
+            <% averageScore="D" %>
+        <% } else if (averageScore >= 4.5) { %>
+            <% averageScore= "E" %>
+        <% } %>
+
+        <!--Display average score-->
+        <h3 id="yourScore"> Your Score:
+          <%=averageScore %>
+        </h3>
+    </div>
+  </div>
+
+  <!--Pop Up-->
+  <div class="popup">
+    <span class="popuptext" id="myPopup"><iframe id="add-product" src="add_product" width="100%"
+        height="100%"></iframe></span>
+  </div>
+
+
+  <tbody>
+    <% data.forEach(function(i) { %>
+      <div class="container list">
+
+        <div class="list-background col-10 col-lg-8">
+          <div class="list-content">
+            <% let currentDate=new Date().toISOString().slice(0, 10) %>
+              <% let expDate=i.expiration_date %>
+                <% let nextDay=new Date(new Date(currentDate).getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0,
+                  10); %>
+                  <% let dayAfterTomorrow=new Date(new Date(currentDate).getTime() + 2 * 24 * 60 * 60 *
+                    1000).toISOString().slice(0, 10) %>
+                    <!-- <%= currentDate %> -->
+                    <!-- <%= expDate %> -->
+                    <% if (expDate===currentDate) { %>
+                      <!--If create e new row if those statements are true-->
+                      <div class="row">
+                        <h5 class="col-5 list-background-alert">
+                          <%= "Expires today" %>
+                        </h5>
+                      </div>
+
+                      <% } else if (expDate===nextDay) { %>
+                        <div class="row">
+                          <h5 class="col-5 list-background-alert">
+                            <%= "Expires tomorrow" %>
+                          </h5>
+                        </div>
+
+                        <% } else if (expDate===(dayAfterTomorrow)) {%>
+                          <div class="row">
+                            <h5 class="col-5 list-background-alert">
+                              <%= "Expires the day after tomorrow" %>
+                            </h5>
+                          </div>
+                          <% } %>
+
+                            <!--https://getbootstrap.com/docs/5.0/utilities/flex/-->
+                            <div class="row top-row-product align-items-center">
+                              <div class="col-5">
+
+
+
+                                <a href="<%= `/product_page?id=${i.id}` %>">
+                                  <h2>
+                                    <%= i.product_name %>
+                                  </h2>
+                                </a>
+
+                              </div>
+                              <div class="col-2">
+                                <button type="submit" class="no-style-button" data-toggle="modal"
+                                  data-target="#editModal-<%= i.id %>"><img src="/assets/edit_button.svg" alt="Edit product button"
+                                    width="80px"> </button>
+                              </div>
+
+                              <!-- Edit modal  -->
+                              <div class="modal fade" id="editModal-<%= i.id %>" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h2 class="modal-title" id="manualAddTitle">Edit Product</h2>
+                                      <button type="button" class="close no-style-button" data-dismiss="modal"
+                                        aria-label="Close">
+                                        <span aria-hidden="true"><img src="/assets/close.svg" alt="Close button"
+                                            width="20px"></span>
+                                      </button>
+                                    </div>
+                                    <!-- Edit the product -->
+                                    <div class="modal-body">
+                                      <!-- Edit the product  -->
+                                      <div class="container sign-up">
+                                        <div class="justify-content-center">
+                                          <!--POST method. Takes id of the product-->
+                                          <form class="mx-auto add-product" action="/update/<%= i.id %>" method="post">
+                                            <div class="form-group">
+                                              <h3>
+                                                <%= i.product_name %>
+                                              </h3>
+                                              <!--Display product information to ensure that user selected correct product-->
+                                              <p>Barcode: <%= i.barcode %>
+                                              </p>
+
+                                              <% if
+                                                (i.image_url==="Image is not available (Outside of Open Food Facts collaborative database)"
+                                                ) { %>
+                                                <img class="img-fluid" src="assets/no_image_available.jpeg" width="400"
+                                                  height="350" alt="No image available">
+                                                <% /* The following input field will be disabled if the image URL starts
+                                                  with "https://images.openfoodfacts" */ %>
+                                                  <% if (i.image_url.includes("openfoodfacts") !==0) { %>
+                                                    <p>
+                                                      <label for="image_url_field"></label>
+                                                      <input type="text" id="image_url" name="image_url"
+                                                        value="<%= i.image_url %>">
+                                                    </p>
+                                                    <% } %>
+                                                      <% } else { %>
+                                                        <div class="d-flex justify-content-center align-items-center">
+                                                          <img src="<%= i.image_url %>" alt="Product Image">
+                                                        </div>
+                                                        <% } %>
+
+                                                          <label for="product_name-field"></label>
+                                                          <input type="text" class="login-form" id="product_name"
+                                                            name="product_name" placeholder="Product Name"
+                                                            value="<%= i.product_name %>">
+                                                          <label for="quantity-field"></label>
+                                                          <input type="text" class="login-form" id="quantity"
+                                                            name="quantity" placeholder="Quantity"
+                                                            value="<%= i.quantity %>">
+                                                          <label for="date-field"></label>
+                                                          <input type="date" class="login-form" id="date"
+                                                            name="expiration_date" placeholder="Expiration date"
+                                                            value="<%= i.expiration_date %>">
+                                            </div>
+                                            <button id="add-button" type="submit" class="button-primary">Update
+                                              item</button>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!--Delete button-->
+                              <div class="col-1 delete">
+                                <form id="delete-form-<%= i.id %>" action="/delete_product/<%= i.id %>" method="post">
+                                  <div class="form-horizontal">
+                                    <div class="form-group row">
+                                      <label class="col-form-label col-sm-2"></label>
+                                      <div class="col-sm-10">
+                                        <button class="no-style-button" type="button" data-toggle="modal"
+                                          data-target="#delete-modal-<%= i.id %>">
+                                          <img class="close-button" src="/assets/close.svg" alt="Delete button" width="35px">
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+
+                            <!-- Delete Record Modal -->
+                            <div class="modal fade" id="delete-modal-<%= i.id %>" tabindex="-1" role="dialog"
+                              aria-labelledby="delete-modal-<%= i.id %>-label" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h2 class="modal-title" id="delete-modal-<%= i.id %>-label">Are you sure you want
+                                      to
+                                      delete "<%= i.product_name %>"?
+                                    </h2>
+                                    <button type="button" class="close no-style-button" data-dismiss="modal"
+                                      aria-label="Close">
+                                      <span aria-hidden="true"><img src="/assets/close.svg" alt="Close button" width="20px"></span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body text-center">
+                                    <% if
+                                      (i.image_url==="Image is not available (Outside of Open Food Facts collaborative database)"
+                                      ) { %>
+                                      <img class="img-fluid" src="assets/no_image_available.jpeg"
+                                        alt="No image available">
+                                      <% } else { %>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                          <img src="<%= i.image_url %>" alt="Product Image">
+                                        </div>
+                                        <% } %>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                    <button type="button" class="btn btn-danger"
+                                      onclick="document.getElementById('delete-form-<%= i.id %>').submit()">Yes</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="row">
+
+
+                            </div>
+
+                            <div class="row">
+                              <div class="col">
+                                <h3 id="eco-score-info">
+                                  <% if (i.eco_score == "unknown" || data.eco_score !=="No information" ||  data.eco_score !== undefined) { %>
+                                      N/A
+                                  <% } else { %>
+                                  <%= i.eco_score %>
+                                  <% } %>
+                                </h3>
+                              </div>
+                              <div class="col">
+
+                                <h3>
+                                  <%= i.expiration_date %>
+                                </h3>
+                              </div>
+                              <div class="col-7">
+                                <h3>
+                                  <%= i.quantity %>
+                                </h3>
+                              </div>
+                            </div>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+  </tbody>
+
+  <script src="js/scripts.js"></script>
+
+  <!--Barcode reader -->
+  <script>
+    function readBarcode() {
+      //Source: https://serratus.github.io/quaggaJS/
+      // Create a container for webcam input
+      var webcamContainer = document.createElement("div");
+      //makes sure that the camera input is rendered, when the modal was closed without having to refresh the page
+      document.getElementById("live-camera").style.display = "inline";
+      webcamContainer.id = "webcam-container"; 
+      document.getElementById("live-camera").appendChild(webcamContainer);
+      var element = document.getElementById("live-camera");
+      Quagga.init({
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: document.querySelector('#live-camera')  //where the camera is output should be rendered 
+        },
+        decoder: {
+          readers: ["ean_reader"]
+        }
+      }, function (err) {
+        if (err) {
+          console.log(err); //error handling
+          return
+        }
+        //console.log("Initialization finished. Ready to start");
+        Quagga.start(); //start quagga
+      });
+      Quagga.onDetected(function (result) {
+        // assign the result to a variable
+        var code = result.codeResult.code;
+
+        //update the values of the barcode search input field with the result
+        document.getElementById("barcode-input-modal").innerText = code;
+        document.getElementById("barcode-input-modal").value = code;
+        document.getElementById("barcode-input").value = code;
+        document.getElementById("barcode-input").innerText = code;
+        //console.log(code);
+        //console.log(document.getElementById("live-camera").style.display);
+        if (document.getElementById("barcode-input-modal").value == code) {
+          Quagga.stop(); //stop quagga 
+          //Disable the camera div
+          document.getElementById("live-camera").style.display = "none"
+          //console.log(document.getElementById("live-camera").style.display);
+          document.getElementById("live-camera").removeChild(webcamContainer);
+        }
+      });
+    }
+
+    //Function to pass on the inputs from barcode input field to the add product modal barcode input field
+    function addBarcodeInput() {
+      document.getElementById("barcode").value = document.getElementById("barcode-input").value
+    }
+  </script>
+
+  <script>
+    //jquery 
+    //stops quagga from accessing the camera if the close button on the modal was clicked
+    $('#scanner').on('hidden.bs.modal', function (e) {
+      Quagga.stop();
+    });
+  </script>
+
+
+  <script>
+    // Get a reference to the image URL input field
+    const imageUrlInput = document.getElementById('image_url');
+
+    // Add an event listener to the image URL input field
+    imageUrlInput.addEventListener('input', () => {
+      // Check if the URL starts with "https://images.openfoodfacts"
+      if (imageUrlInput.value.includes('openfoodfacts')) {
+        // Disable or hide the input field
+        imageUrlInput.disabled = true; // This disables the input field
+        // imageUrlInput.style.display = 'none'; // This hides the input field
+      } else {
+        // Enable or show the input field
+        imageUrlInput.disabled = false; // This enables the input field
+        // imageUrlInput.style.display = 'block'; // This shows the input field
+      }
+    });
+  </script>
+</body>
+
+</html>

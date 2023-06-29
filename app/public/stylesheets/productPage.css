@@ -1,0 +1,36 @@
+/** .title-separator {
+    border: 5px solid;
+    /** override bootstrap opacity*/
+   /** opacity: 1.0;
+    color: #FFD900;
+} */
+
+.productpage
+{
+position:absolute;
+background-color:#f8f8f8;
+height:1024px;
+width:1440px;
+padding:0px;
+}
+.productdetail
+{
+background-color:#ffffff;
+height:294px;
+width:337px;
+padding:0px;
+left:34px;
+top:268px;
+position:relative;
+}
+.productname
+{
+color:#030303;
+text-align:left;
+vertical-align:text-top;
+font-size:32px;
+font-family:Montserrat;
+line-height:auto;
+}
+
+

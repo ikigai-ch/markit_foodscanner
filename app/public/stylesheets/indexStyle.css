@@ -1,0 +1,36 @@
+/**Language Selector*/
+#lang-sign-up {
+    margin-bottom: 40px;
+    border-radius: 8px;
+    height: 35px;
+    width: 132px;
+}
+
+
+#password-label{
+    font-size: 12px;
+    align-items: center;
+    display: flex;
+}
+
+
+/**Show password toggle*/
+#show-password{
+    flex: none;    
+    margin-left: 20px;
+}
+
+/**Sign in button*/
+#sign-in{
+    margin-bottom: 50px;
+}
+
+label{
+    font-weight: 600;
+}
+
+/**Close button that apperas after invalid input*/
+.close.no-style-button{
+    text-align: right;
+    margin: 0px;
+}
